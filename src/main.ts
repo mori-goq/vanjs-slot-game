@@ -1,24 +1,66 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.ts'
+import van from 'vanjs-core'
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+import { Reel } from './Reel'
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+import { useIntervalChanger } from './useIntervalChanger'
+
+const symbols = ['🍦', '🔔', '🍒', '🍉', '💎', '🍇', '💰', '🍀', '🍋']
+
+const SlotGame = () => {
+  const { h1, div, span, button } = van.tags
+
+  const [intervalChanger, handler] = useIntervalChanger(symbols)
+  const [intervalChanger2, handler2] = useIntervalChanger(symbols)
+  const [intervalChanger3, handler3] = useIntervalChanger(symbols)
+
+  // 絵柄の変更を開始する
+  const reset = () => {
+    handler.start()
+    handler2.start()
+    handler3.start()
+  }
+
+  // init
+  reset()
+
+  van.derive(() => {
+    // どれか１つでも変更中の場合、リターン
+    if (
+      intervalChanger.isChanging.val ||
+      intervalChanger2.isChanging.val ||
+      intervalChanger3.isChanging.val
+    ) {
+      return
+    }
+
+    // 絵柄が全て揃った場合、アラートを表示
+    if (
+      intervalChanger.currentValue.val === intervalChanger2.currentValue.val &&
+      intervalChanger2.currentValue.val === intervalChanger3.currentValue.val
+    ) {
+      alert('Congratulations!')
+    }
+  })
+
+  return div(
+    h1('VanJS Slot Game'),
+    div(symbols.map((symbol) => span(symbol))),
+    div(
+      Reel({
+        symbol: intervalChanger.currentValue,
+        stop: () => handler.stop(),
+      }),
+      Reel({
+        symbol: intervalChanger2.currentValue,
+        stop: () => handler2.stop(),
+      }),
+      Reel({
+        symbol: intervalChanger3.currentValue,
+        stop: () => handler3.stop(),
+      }),
+    ),
+    button({ onclick: () => reset() }, 'RESET'),
+  )
+}
+
+van.add(document.getElementById('app')!, SlotGame())
