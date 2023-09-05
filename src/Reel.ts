@@ -10,10 +10,12 @@ export const Reel = ({ symbol, stop }: Props) => {
   const { div, span, button } = van.tags
 
   return div(
-    span(symbol),
+    { class: 'reel' },
+    span({ class: 'reel-symbol' }, symbol),
     button(
       {
         type: 'button',
+        class: 'reel-btn',
         onclick: () => stop(),
       },
       'STOP',

@@ -43,9 +43,14 @@ const SlotGame = () => {
   })
 
   return div(
-    h1('VanJS Slot Game'),
-    div(symbols.map((symbol) => span(symbol))),
+    { class: 'slot-game' },
+    h1({ class: 'title' }, 'VanJS Slot Game'),
     div(
+      { class: 'order' },
+      symbols.map((symbol) => span(symbol)),
+    ),
+    div(
+      { class: 'reels' },
       Reel({
         symbol: intervalChanger.currentValue,
         stop: () => handler.stop(),
@@ -59,7 +64,7 @@ const SlotGame = () => {
         stop: () => handler3.stop(),
       }),
     ),
-    button({ onclick: () => reset() }, 'RESET'),
+    button({ class: 'reset-btn', onclick: () => reset() }, 'RESET'),
   )
 }
 
